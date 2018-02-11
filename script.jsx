@@ -1,13 +1,16 @@
-const counter = (state = 0, action) => {
+const counter = (state = {}, action) => {
+  var immutableStore = Immutable.fromJS(state)
   switch (action.type) {
-    case 'NEWTODO':
-      return state + 1;
+    case 'NEWNAME':
+      return  immutableStore
+            .set('name', action.value)
+            .toJS() // returning usual JS object;
     default:
       return state;
   }
 }
 
 expect(
-  counter(0, { type: 'NEWTODO'})
-).toEqual( 1);
+  counter({name: "kevin", }, { type: 'NEWNAME', value: "Johnny"})
+).toEqual( {name: "Johnny", });
 console.log('Test passed');
