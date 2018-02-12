@@ -26,10 +26,15 @@ const counter = (state = {currentViewing:'',toDoLists:{}}, action) => {
             .toJS()
     // remove todoItem
     case 'REMTODO':
-    return immutableStore
-        .deleteIn(['toDoLists', action.todoListName, action.arrayPosition])
-        .toJS()
+      return immutableStore
+          .deleteIn(['toDoLists', action.todoListName, action.arrayPosition])
+          .toJS()
+
     // currently VIEWING
+    case 'UPDATECURRENTLYVIEWING':
+      return immutableStore
+          .set('currentViewing' , action.whatViewing)
+          .toJS()
                             // viewing: TODOITEM_ID
     default:
       return state;
@@ -84,6 +89,9 @@ expect(counter(
   {currentViewing:'', toDoLists:{todoname:[{todo:"brush Teeth", completed:false},{todo:"brush Teeth", completed:true}]}}, { type: 'REMTODO', todoListName: "todoname", arrayPosition: 0})
 ).toEqual({currentViewing:'', toDoLists:{todoname:[{todo:"brush Teeth", completed:true}]}});
 
-
+//update currently viewing
+expect(counter(
+  {currentViewing:'', toDoLists:{}}, { type: 'UPDATECURRENTLYVIEWING', whatViewing: "listYouAreViewing"})
+).toEqual({currentViewing:'listYouAreViewing', toDoLists:{}});
 
 console.log('Test passed');
