@@ -48,28 +48,61 @@ var todoItemHolder;
 class TodoList extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      listName: "VALUE",
+    };
+
     this.handleClick = this.handleClick.bind(this);
     this.currentlyViewingChanger = this.currentlyViewingChanger.bind(this);
+    this.deleteThis = this.deleteThis.bind(this);
+    this.addList = this.addList.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
   handleClick(e) {
-    this.currentlyViewingChanger(e.currentTarget.dataset.id )
+    this.currentlyViewingChanger(e.currentTarget.dataset.id)
+  }
+  addList(e) {
+    if (this.state.listName != "") {
+      store.dispatch({
+        type: 'NEWTODOLIST', name: this.state.listName
+      })
+    }
+    this.setState({listName: ""});
+  }
+  handleChange(e) {
+    this.setState({listName: e.target.value});
   }
   currentlyViewingChanger(e){
     store.dispatch({
         type: 'UPDATECURRENTLYVIEWING', whatViewing: e
     })
   }
+  deleteThis(e){
+    console.log(e.currentTarget.dataset.id)
+    store.dispatch({
+        type: 'REMTODOLIST', name: e.currentTarget.dataset.id
+    })
+  }
   render() {
     todoListNameHolder = "";
-    todoListNameHolder = this.props.value.map((z) =>
-      <h1 data-id={z} onClick={this.handleClick.bind(this)}>
-        {z}
-      </h1>
+    todoListNameHolder = this.props.value.map((z) => {
+      if (true) {
+        return (<span>
+          <button className = "deleteButton" data-id={z}  onClick={this.deleteThis.bind(this)}>X</button>
+            <h1 data-id={z} onClick={this.handleClick.bind(this)}>
+              {z}
+            </h1>
+          </span>
+          )
+      }
+    }
+
     );
-    return <ul Class = "NAVBAR">{todoListNameHolder}</ul>;
+    return <ul Class = "NAVBAR"> <button onClick={this.addList.bind(this)} className = "addButton">ADD LIST</button><input onChange={this.handleChange.bind(this)} className = "todoListText"type="text" name="name" value={this.state.listName}/> {todoListNameHolder}</ul>;
   }
 }
-
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 class TodoListItems extends React.Component {
   constructor(props) {
     super(props);
@@ -85,13 +118,11 @@ class TodoListItems extends React.Component {
     }
   }
   deleteThis(e){
-    console.log(e.currentTarget.dataset.id)
     store.dispatch({
         type: 'REMTODO', todoListName: store.getState().currentViewing, arrayPosition: e.currentTarget.dataset.id
     })
   }
   handleClick(e) {
-    console.log(e.currentTarget.dataset.id );
     this.toggleCompletion(e.currentTarget.dataset.id )
   }
   toggleCompletion(e){
@@ -102,7 +133,6 @@ class TodoListItems extends React.Component {
   render() {
     todoListNameHolder = "";
     todoItemHolder = this.listItemsInViewedList();
-    console.log(todoItemHolder);
     if (todoItemHolder != null) {
       // use some kind of mapping array to see which ones are completed
       var iterator = 0;
@@ -117,7 +147,7 @@ class TodoListItems extends React.Component {
         }}
       );
     }
-    return <ul Class = "NAVBAR">{todoListNameHolder}</ul>;
+    return <ul Class = "NAVBAR">{todoListNameHolder}  <button className = "addButton">ADD TODO</button><input className = "todoItemText" type="text" name="name" /></ul> ;
   }
 }
 
