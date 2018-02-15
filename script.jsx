@@ -1,4 +1,4 @@
-const todoListManager = (state ={currentViewing:'', toDoLists:{todoname:[],todoname2:[]}}, action) => {
+const todoListManager = (state ={currentViewing:'', toDoLists:{todoname:[],todoname2:[{"todo":"brush Teeth","completed":false},{"todo":"brush Teeths","completed":false},{"todo":"brush Teethss","completed":false}]}}, action) => {
   var immutableStore = Immutable.fromJS(state)
   switch (action.type) {
     // add TodoList
@@ -8,6 +8,8 @@ const todoListManager = (state ={currentViewing:'', toDoLists:{todoname:[],todon
           .toJS()
     // remove todoList
     case 'REMTODOLIST':
+      // resets the viewing
+      immutableStore = immutableStore.set('currentViewing' , "")
       // need the name of the todolist to be removed
       return immutableStore
           .deleteIn(['toDoLists', action.name])
@@ -40,8 +42,9 @@ const todoListManager = (state ={currentViewing:'', toDoLists:{todoname:[],todon
   }
 }
 
-
+// list navbar
 var todoListNameHolder = "";
+var todoItemHolder;
 class TodoList extends React.Component {
   constructor(props) {
     super(props);
@@ -49,7 +52,6 @@ class TodoList extends React.Component {
     this.currentlyViewingChanger = this.currentlyViewingChanger.bind(this);
   }
   handleClick(e) {
-    console.log( e.currentTarget.dataset.id )
     this.currentlyViewingChanger(e.currentTarget.dataset.id )
   }
   currentlyViewingChanger(e){
@@ -60,11 +62,62 @@ class TodoList extends React.Component {
   render() {
     todoListNameHolder = "";
     todoListNameHolder = this.props.value.map((z) =>
-      <li data-id={z} onClick={this.handleClick.bind(this)}>
+      <h1 data-id={z} onClick={this.handleClick.bind(this)}>
         {z}
-      </li>
+      </h1>
     );
-    return <ul>{todoListNameHolder}</ul>;
+    return <ul Class = "NAVBAR">{todoListNameHolder}</ul>;
+  }
+}
+
+class TodoListItems extends React.Component {
+  constructor(props) {
+    super(props);
+    this.listItemsInViewedList = this.listItemsInViewedList.bind(this);
+    this.toggleCompletion = this.toggleCompletion.bind(this);
+    this.deleteThis = this.deleteThis.bind(this);
+  }
+  listItemsInViewedList(e){
+    var selectedPlaceholder = this.props.value
+    var itemsWithinList = store.getState().toDoLists[selectedPlaceholder];
+    if (itemsWithinList != null) {
+      return [(itemsWithinList.map(a => a.todo)),(itemsWithinList.map(a => a.completed))];
+    }
+  }
+  deleteThis(e){
+    console.log(e.currentTarget.dataset.id)
+    store.dispatch({
+        type: 'REMTODO', todoListName: store.getState().currentViewing, arrayPosition: e.currentTarget.dataset.id
+    })
+  }
+  handleClick(e) {
+    console.log(e.currentTarget.dataset.id );
+    this.toggleCompletion(e.currentTarget.dataset.id )
+  }
+  toggleCompletion(e){
+    store.dispatch({
+       type: 'TOGGLECOMPLETION', todoListName: store.getState().currentViewing, arrayPosition: e
+    })
+  }
+  render() {
+    todoListNameHolder = "";
+    todoItemHolder = this.listItemsInViewedList();
+    console.log(todoItemHolder);
+    if (todoItemHolder != null) {
+      // use some kind of mapping array to see which ones are completed
+      var iterator = 0;
+      todoListNameHolder = todoItemHolder[0].map((z) =>
+        {if (z) {
+          return (<li>
+            <button className = "deleteButton" data-id={iterator} onClick={this.deleteThis.bind(this)}>X</button>
+            <h4 className={todoItemHolder[1][iterator].toString()} data-id={iterator++}  onClick={this.handleClick.bind(this)}>
+              {z}
+            </h4>
+          </li>)
+        }}
+      );
+    }
+    return <ul Class = "NAVBAR">{todoListNameHolder}</ul>;
   }
 }
 
@@ -94,10 +147,15 @@ const { createStore } = Redux;
 const store = createStore(todoListManager)
 
 const render = () => {
+  var currHolding = store.getState().currentViewing;
   ReactDOM.render(
     [<TodoList
       value={Object.keys(store.getState().toDoLists)}
-    />,<Counter
+    />,
+    <TodoListItems
+      value={store.getState().currentViewing}
+    />,
+    <Counter
       value={JSON.stringify(store.getState())}
       todoAdder={() =>
         store.dispatch({
