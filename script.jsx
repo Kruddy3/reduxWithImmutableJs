@@ -71,6 +71,7 @@ class TodoList extends React.Component {
     this.setState({listName: ""});
   }
   handleChange(e) {
+
     this.setState({listName: e.target.value});
   }
   currentlyViewingChanger(e){
@@ -86,15 +87,24 @@ class TodoList extends React.Component {
   render() {
     todoListNameHolder = "";
     todoListNameHolder = this.props.value.map((z) => {
-      if (true) {
+      if (z == store.getState().currentViewing) {
         return (<span>
           <button className = "deleteButton" data-id={z}  onClick={this.deleteThis.bind(this)}>X</button>
-            <h1 data-id={z} onClick={this.handleClick.bind(this)}>
+            <h1 data-id={z} onClick={this.handleClick.bind(this)} style= {{color: 'red'}}>
+              {z}
+            </h1>
+          </span>
+          )
+      } else {
+        return (<span>
+          <button className = "deleteButton" data-id={z}  onClick={this.deleteThis.bind(this)}>X</button>
+            <h1 data-id={z} onClick={this.handleClick.bind(this)} style= {{color: 'black'}}>
               {z}
             </h1>
           </span>
           )
       }
+
     }
 
     );
