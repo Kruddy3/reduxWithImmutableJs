@@ -50,7 +50,7 @@ class TodoList extends React.Component {
     super(props);
 
     this.state = {
-      listName: "VALUE",
+      listName: "value",
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -109,7 +109,25 @@ class TodoListItems extends React.Component {
     this.listItemsInViewedList = this.listItemsInViewedList.bind(this);
     this.toggleCompletion = this.toggleCompletion.bind(this);
     this.deleteThis = this.deleteThis.bind(this);
+    this.addTodoItem = this.addTodoItem.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+
+    this.state = {
+      listName: "value",
+    };
   }
+  addTodoItem(e) {
+    if (this.state.listName != "") {
+      store.dispatch({
+         type: 'ADDTODOITEM', todoListName: store.getState().currentViewing, todoItem: this.state.listName
+      })
+    }
+    this.setState({listName: ""});
+  }
+  handleChange(e) {
+    this.setState({listName: e.target.value});
+  }
+
   listItemsInViewedList(e){
     var selectedPlaceholder = this.props.value
     var itemsWithinList = store.getState().toDoLists[selectedPlaceholder];
@@ -147,29 +165,29 @@ class TodoListItems extends React.Component {
         }}
       );
     }
-    return <ul Class = "NAVBAR">{todoListNameHolder}  <button className = "addButton">ADD TODO</button><input className = "todoItemText" type="text" name="name" /></ul> ;
+    return <ul Class = "NAVBAR">{todoListNameHolder} <button onClick={this.addTodoItem.bind(this)} className = "addButton">ADD TODO</button><input onChange={this.handleChange.bind(this)} className = "todoListText"type="text" name="name" value={this.state.listName}/></ul> ;
   }
 }
 
-const Counter = ({
-  value,
-  todoAdder,
-  todoRemover,
-  todoItemAdder,
-  todoItemRemover,
-  toggleComplete,
-  currentlyViewingChanger
-}) => (
-  <div>
-    <button onClick={todoAdder}>Add Todo</button>
-    <button onClick={todoRemover}>Remove Todo</button>
-    <button onClick={todoItemAdder}>Add Todo Item</button>
-    <button onClick={toggleComplete}>Toggle Completion</button>
-    <button onClick={todoItemRemover}>Remove Todo Item</button>
-    <button onClick={currentlyViewingChanger}>Change Currently Viewing</button>
-    <h1>{value}</h1>
-  </div>
-);
+// const Counter = ({
+//   value,
+//   todoAdder,
+//   todoRemover,
+//   todoItemAdder,
+//   todoItemRemover,
+//   toggleComplete,
+//   currentlyViewingChanger
+// }) => (
+//   <div>
+//     <button onClick={todoAdder}>Add Todo</button>
+//     <button onClick={todoRemover}>Remove Todo</button>
+//     <button onClick={todoItemAdder}>Add Todo Item</button>
+//     <button onClick={toggleComplete}>Toggle Completion</button>
+//     <button onClick={todoItemRemover}>Remove Todo Item</button>
+//     <button onClick={currentlyViewingChanger}>Change Currently Viewing</button>
+//     <h1>{value}</h1>
+//   </div>
+// );
 
 
 
@@ -185,39 +203,40 @@ const render = () => {
     <TodoListItems
       value={store.getState().currentViewing}
     />,
-    <Counter
-      value={JSON.stringify(store.getState())}
-      todoAdder={() =>
-        store.dispatch({
-          type: 'NEWTODOLIST', name: "todoname"
-        })
-      }
-      todoRemover={() =>
-        store.dispatch({
-           type: 'REMTODOLIST', name: "todoname"
-        })
-      }
-      todoItemAdder={() =>
-        store.dispatch({
-           type: 'ADDTODOITEM', todoListName: "todoname", todoItem: "brush Teeth"
-        })
-      }
-      toggleComplete={() =>
-        store.dispatch({
-           type: 'TOGGLECOMPLETION', todoListName: "todoname", arrayPosition: 0
-        })
-      }
-      todoItemRemover={() =>
-        store.dispatch({
-            type: 'REMTODO', todoListName: "todoname", arrayPosition: 0
-        })
-      }
-      currentlyViewingChanger={() =>
-        store.dispatch({
-            type: 'UPDATECURRENTLYVIEWING', whatViewing: "listYouAreViewing"
-        })
-      }
-    />],
+    // <Counter
+    //   value={JSON.stringify(store.getState())}
+    //   todoAdder={() =>
+    //     store.dispatch({
+    //       type: 'NEWTODOLIST', name: "todoname"
+    //     })
+    //   }
+    //   todoRemover={() =>
+    //     store.dispatch({
+    //        type: 'REMTODOLIST', name: "todoname"
+    //     })
+    //   }
+    //   todoItemAdder={() =>
+    //     store.dispatch({
+    //        type: 'ADDTODOITEM', todoListName: "todoname", todoItem: "brush Teeth"
+    //     })
+    //   }
+    //   toggleComplete={() =>
+    //     store.dispatch({
+    //        type: 'TOGGLECOMPLETION', todoListName: "todoname", arrayPosition: 0
+    //     })
+    //   }
+    //   todoItemRemover={() =>
+    //     store.dispatch({
+    //         type: 'REMTODO', todoListName: "todoname", arrayPosition: 0
+    //     })
+    //   }
+    //   currentlyViewingChanger={() =>
+    //     store.dispatch({
+    //         type: 'UPDATECURRENTLYVIEWING', whatViewing: "listYouAreViewing"
+    //     })
+    //   }
+    // />
+  ],
 
 
 
