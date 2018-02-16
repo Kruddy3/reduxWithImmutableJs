@@ -9,7 +9,9 @@ const todoListManager = (state ={currentViewing:'', toDoLists:{todoname:[],todon
     // remove todoList
     case 'REMTODOLIST':
       // resets the viewing
-      immutableStore = immutableStore.set('currentViewing' , "")
+      if (store.getState().currentViewing == action.name) {
+        immutableStore = immutableStore.set('currentViewing' , "")
+      }
       // need the name of the todolist to be removed
       return immutableStore
           .deleteIn(['toDoLists', action.name])
