@@ -79,7 +79,6 @@ class TodoList extends React.Component {
     })
   }
   deleteThis(e){
-    console.log(e.currentTarget.dataset.id)
     store.dispatch({
         type: 'REMTODOLIST', name: e.currentTarget.dataset.id
     })
@@ -165,7 +164,11 @@ class TodoListItems extends React.Component {
         }}
       );
     }
-    return <ul Class = "NAVBAR">{todoListNameHolder} <button onClick={this.addTodoItem.bind(this)} className = "addButton">ADD TODO</button><input onChange={this.handleChange.bind(this)} className = "todoListText"type="text" name="name" value={this.state.listName}/></ul> ;
+    if (store.getState().currentViewing != "") {
+      return <ul Class = "NAVBAR">{todoListNameHolder} <button onClick={this.addTodoItem.bind(this)} className = "addButton">ADD TODO</button><input onChange={this.handleChange.bind(this)} className = "todoListText"type="text" name="name" value={this.state.listName}/></ul>
+
+    }
+    return ""
   }
 }
 
